@@ -1,41 +1,54 @@
-import { Box, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material'
-import React, { CSSProperties } from 'react'
+import {
+  Box,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+} from "@mui/material";
+import React, { CSSProperties } from "react";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
 import HomeIcon from "@mui/icons-material/Home";
-import BarChartIcon from '@mui/icons-material/BarChart';
-import { NavLink } from 'react-router-dom';
+import BarChartIcon from "@mui/icons-material/BarChart";
+import { NavLink } from "react-router-dom";
 
 interface SidebarProps {
   drawerWidth: number;
   mobileOpen: boolean;
   handleDrawerTransitionEnd: () => void;
-  handleDrawerClose: () => void,
+  handleDrawerClose: () => void;
 }
 
 interface menuItem {
-  text: string,
-  path: string,
-  icon: React.ComponentType,
+  text: string;
+  path: string;
+  icon: React.ComponentType;
 }
 
-const SideBar = ({ drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDrawerClose }: SidebarProps) => {
-  
+const SideBar = ({
+  drawerWidth,
+  mobileOpen,
+  handleDrawerTransitionEnd,
+  handleDrawerClose,
+}: SidebarProps) => {
   const MenuItems: menuItem[] = [
-    {text: "Home", path: "/", icon: HomeIcon},
-    {text: "Report", path: "/report", icon: BarChartIcon}
-  ]
-
+    { text: "Home", path: "/", icon: HomeIcon },
+    { text: "Report", path: "/report", icon: BarChartIcon },
+  ];
 
   const baseLinkStyle: CSSProperties = {
     textDecoration: "none",
     color: "inherit",
-    display: "block"
-  }
+    display: "block",
+  };
 
   const activeLinkStyle: CSSProperties = {
-    backgroundColor: "rgba(0, 0, 0, 0.08)"
-  }
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
+  };
 
   const drawer = (
     <div>
@@ -43,13 +56,17 @@ const SideBar = ({ drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDra
       <Divider />
       <List>
         {MenuItems.map((item, index) => (
-          <NavLink key={item.text} to={item.path} style={({ isActive }) => {
-            // console.log("選択されたメニュー", item.text, isActive)
-            return {
-              ...baseLinkStyle,
-              ...(isActive ? activeLinkStyle: {})
-            }
-          }}>
+          <NavLink
+            key={item.text}
+            to={item.path}
+            style={({ isActive }) => {
+              // console.log("選択されたメニュー", item.text, isActive)
+              return {
+                ...baseLinkStyle,
+                ...(isActive ? activeLinkStyle : {}),
+              };
+            }}
+          >
             <ListItem key={index} disablePadding>
               <ListItemButton>
                 <ListItemIcon>
@@ -64,11 +81,11 @@ const SideBar = ({ drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDra
       </List>
     </div>
   );
-  
+
   return (
     <Box
       component="nav"
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
       aria-label="mailbox folders"
     >
       {/* モバイル */}
@@ -81,7 +98,7 @@ const SideBar = ({ drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDra
           keepMounted: true, // Better open performance on mobile.
         }}
         sx={{
-          display: { xs: "block", sm: "none" },
+          display: { xs: "block", md: "none" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: drawerWidth,
@@ -90,11 +107,12 @@ const SideBar = ({ drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDra
       >
         {drawer}
       </Drawer>
+
       {/* PC */}
       <Drawer
         variant="permanent"
         sx={{
-          display: { xs: "none", sm: "block" },
+          display: { xs: "none", md: "block" },
           "& .MuiDrawer-paper": {
             boxSizing: "border-box",
             width: drawerWidth,
@@ -108,4 +126,4 @@ const SideBar = ({ drawerWidth, mobileOpen, handleDrawerTransitionEnd, handleDra
   );
 };
 
-export default SideBar
+export default SideBar;
