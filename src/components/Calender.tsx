@@ -4,8 +4,9 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import jaLocale from '@fullcalendar/core/locales/ja'
 import "../calender.css"
 import { EventContentArg } from '@fullcalendar/core'
-import { Transaction } from '../types'
+import { Balance, CalenderContent, Transaction } from '../types'
 import { calculateDailyBalances } from '../utils/finnanceCalculations'
+import { formatCurrency } from '../utils/formatting'
 
 interface CalenderProps {
   monthlyTransactions: Transaction[]
@@ -25,7 +26,21 @@ const Calender = ({ monthlyTransactions }: CalenderProps) => {
 
   // 月の取引データ
   const dailyBalances = calculateDailyBalances(monthlyTransactions);
-  console.log(dailyBalances)
+
+  // FullCalender用のイベントを生成する関数
+  const createCalenderEvents = (dailyBalances: Record<string, Balance>): CalenderContent[] => {
+    return Object.keys(dailyBalances).map((date) => {
+      const {income, expense, balance} = dailyBalances[date]
+      return {
+        start: date,
+        income: formatCurrency(income),
+        expense: formatCurrency(expense),
+        balance: formatCurrency(balance),
+      };
+    })
+  }
+  const calenderEvents = createCalenderEvents(dailyBalances);
+  console.log(calenderEvents)
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     console.log(eventInfo);
@@ -49,7 +64,7 @@ const Calender = ({ monthlyTransactions }: CalenderProps) => {
       locale={jaLocale}
       plugins={[dayGridPlugin]}
       initialView="dayGridMonth"
-      events={events}
+      events={calenderEvents}
       eventContent={renderEventContent}
     />
   );
