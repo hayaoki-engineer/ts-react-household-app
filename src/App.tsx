@@ -23,10 +23,7 @@ function App() {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  console.log(currentMonth);
-  const a = format(currentMonth, "yyyy-MM")
-  console.log(a)
-
+  
   useEffect(() => {
 
     const fecheTransactions = async() => {
@@ -60,7 +57,6 @@ function App() {
   const monthlyTransactions = transactions.filter((transaction) => {
     return transaction.date.startsWith(formatMonth(currentMonth));
   })
-  console.log(monthlyTransactions)
 
   return (
     <ThemeProvider theme={theme}>

@@ -48,10 +48,9 @@ const Calender = ({
     });
   };
   const calenderEvents = createCalenderEvents(dailyBalances);
-  console.log(calenderEvents);
+  
 
   const renderEventContent = (eventInfo: EventContentArg) => {
-    console.log(eventInfo);
     return (
       <div>
         <div className="money" id="event-income">
@@ -68,7 +67,6 @@ const Calender = ({
   };
 
   const handleDateSet = (datesetInfo: DatesSetArg) => {
-    console.log(datesetInfo);
     setCurrentMonth(datesetInfo.view.currentStart);
   };
 
