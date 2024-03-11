@@ -8,18 +8,24 @@ import { Balance, CalenderContent, Transaction } from "../types";
 import { calculateDailyBalances } from "../utils/finnanceCalculations";
 import { formatCurrency } from "../utils/formatting";
 import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
+import { useTheme } from "@mui/material";
 
 interface CalenderProps {
   monthlyTransactions: Transaction[];
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
   setCurrentDay: React.Dispatch<React.SetStateAction<string>>;
+  currentDay: string,
 }
 
 const Calender = ({
   monthlyTransactions,
   setCurrentMonth,
   setCurrentDay,
+  currentDay,
 }: CalenderProps) => {
+
+  const theme = useTheme()
+
   const events = [
     {
       title: "Meeting",
@@ -48,7 +54,15 @@ const Calender = ({
     });
   };
   const calenderEvents = createCalenderEvents(dailyBalances);
+  console.log(calenderEvents)
+
+  const backgroundEvent = {
+    start: currentDay,
+    display: "background",
+    backgroundColor: theme.palette.incomeColor.light,
+  };
   
+  console.log([...calenderEvents, backgroundEvent])
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     return (
@@ -79,7 +93,7 @@ const Calender = ({
       locale={jaLocale}
       plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
-      events={calenderEvents}
+      events={[...calenderEvents, backgroundEvent]}
       eventContent={renderEventContent}
       datesSet={handleDateSet}
       dateClick={handleDateClick}
