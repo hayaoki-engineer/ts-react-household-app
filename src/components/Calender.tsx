@@ -1,19 +1,25 @@
-import FullCalendar from '@fullcalendar/react'
-import React from 'react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import jaLocale from '@fullcalendar/core/locales/ja'
-import "../calender.css"
-import { DatesSetArg, EventContentArg } from '@fullcalendar/core'
-import { Balance, CalenderContent, Transaction } from '../types'
-import { calculateDailyBalances } from '../utils/finnanceCalculations'
-import { formatCurrency } from '../utils/formatting'
+import FullCalendar from "@fullcalendar/react";
+import React from "react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import jaLocale from "@fullcalendar/core/locales/ja";
+import "../calender.css";
+import { DatesSetArg, EventContentArg } from "@fullcalendar/core";
+import { Balance, CalenderContent, Transaction } from "../types";
+import { calculateDailyBalances } from "../utils/finnanceCalculations";
+import { formatCurrency } from "../utils/formatting";
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 
 interface CalenderProps {
   monthlyTransactions: Transaction[];
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
+  setCurrentDay: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Calender = ({ monthlyTransactions, setCurrentMonth }: CalenderProps) => {
+const Calender = ({
+  monthlyTransactions,
+  setCurrentMonth,
+  setCurrentDay,
+}: CalenderProps) => {
   const events = [
     {
       title: "Meeting",
@@ -62,20 +68,25 @@ const Calender = ({ monthlyTransactions, setCurrentMonth }: CalenderProps) => {
   };
 
   const handleDateSet = (datesetInfo: DatesSetArg) => {
-    console.log(datesetInfo)
-    setCurrentMonth(datesetInfo.view.currentStart)
+    console.log(datesetInfo);
+    setCurrentMonth(datesetInfo.view.currentStart);
+  };
+
+  const handleDateClick = (dateInfo: DateClickArg) => {
+    setCurrentDay(dateInfo.dateStr);
   };
 
   return (
     <FullCalendar
       locale={jaLocale}
-      plugins={[dayGridPlugin]}
+      plugins={[dayGridPlugin, interactionPlugin]}
       initialView="dayGridMonth"
       events={calenderEvents}
       eventContent={renderEventContent}
       datesSet={handleDateSet}
+      dateClick={handleDateClick}
     />
   );
 };
 
-export default Calender
+export default Calender;
