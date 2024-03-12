@@ -9,18 +9,27 @@ import { format } from "date-fns";
 
 interface HomeProps {
   monthlyTransactions: Transaction[];
-  setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>,
+  setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
 }
 
 const Home = ({ monthlyTransactions, setCurrentMonth }: HomeProps) => {
-
   const today = format(new Date(), "yyyy-MM-dd");
   const [currentDay, setCurrentDay] = useState(today);
-  
+  const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false);
+
   // 1日分のデータを取得
   const dailyTransactions = monthlyTransactions.filter((transaction) => {
-    return transaction.date === currentDay
-  })
+    return transaction.date === currentDay;
+  });
+
+  const closeForm = () => {
+    setIsEntryDrawerOpen(!isEntryDrawerOpen);
+  };
+
+  // フォームの開閉処理
+  const handleAddTransactionForm = () => {
+    setIsEntryDrawerOpen(!isEntryDrawerOpen);
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -41,8 +50,12 @@ const Home = ({ monthlyTransactions, setCurrentMonth }: HomeProps) => {
         <TransactionMenu
           dailyTransactions={dailyTransactions}
           currentDay={currentDay}
+          onAddTransactionForm={handleAddTransactionForm}
         />
-        <TransactionForm />
+        <TransactionForm
+          onCloseForm={closeForm}
+          isEntryDrawerOpen={isEntryDrawerOpen}
+        />
       </Box>
     </Box>
   );
