@@ -1,6 +1,6 @@
 import React from 'react'
 import Fastfood from '@mui/icons-material/Fastfood'
-import { expenceCategory, incomeCategory } from '../../types'
+import { ExpenseCategory, IncomeCategory } from '../../types'
 import AlarmIcon from "@mui/icons-material/Alarm";
 import AddHomeIcon from "@mui/icons-material/AddHome";
 import Diversity3Icon from "@mui/icons-material/Diversity3";
@@ -10,7 +10,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import SavingsIcon from "@mui/icons-material/Savings";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
 
-const IconComponents: Record<incomeCategory | expenceCategory, JSX.Element> = {
+const IconComponents: Record<IncomeCategory | ExpenseCategory, JSX.Element> = {
   食費: <Fastfood fontSize="small" />,
   日用品: <AlarmIcon fontSize="small" />,
   住居費: <AddHomeIcon fontSize="small" />,
