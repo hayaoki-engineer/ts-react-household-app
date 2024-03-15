@@ -56,7 +56,7 @@ const Calender = ({
     });
   };
   const calenderEvents = createCalenderEvents(dailyBalances);
-  console.log(calenderEvents);
+  // console.log(calenderEvents);
 
   const backgroundEvent = {
     start: currentDay,
@@ -64,7 +64,7 @@ const Calender = ({
     backgroundColor: theme.palette.incomeColor.light,
   };
 
-  console.log([...calenderEvents, backgroundEvent]);
+  // console.log([...calenderEvents, backgroundEvent]);
 
   const renderEventContent = (eventInfo: EventContentArg) => {
     return (

@@ -9,10 +9,11 @@ import {theme} from './theme/theme'
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
 import { Transaction } from './types';
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { db } from './firebase';
 import { format } from 'date-fns';
 import { formatMonth } from './utils/formatting';
+import { Schema } from './validations/schema';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
+  // firestoreのデータを全て取得
   useEffect(() => {
 
     const fecheTransactions = async() => {
@@ -54,9 +56,35 @@ function App() {
 
   }, [])
   
+  // ひと月分のデータのみ取得
   const monthlyTransactions = transactions.filter((transaction) => {
     return transaction.date.startsWith(formatMonth(currentMonth));
   })
+
+  // 取引を保存する処理
+  const handleSaveTransaction = async (transaction: Schema) => {
+    console.log(transaction)
+    try {
+      // firestoreにデータを保存
+      const docRef = await addDoc(collection(db, "Transactions"), transaction);
+      console.log("Document written with ID: ", docRef.id);
+
+      const newTransaction = {
+        id: docRef.id,
+        ...transaction
+      } as Transaction;
+      console.log(newTransaction);
+      setTransactions((prevTransacton) => [...prevTransacton, newTransaction]);
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error(err);
+        console.error(err.message);
+        console.error(err.code);
+      } else {
+        console.error("一般的なエラーは:", err);
+      }
+    }
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -70,6 +98,7 @@ function App() {
                 <Home
                   monthlyTransactions={monthlyTransactions}
                   setCurrentMonth={setCurrentMonth}
+                  onSaveTransaction={handleSaveTransaction}
                 />
               }
             />

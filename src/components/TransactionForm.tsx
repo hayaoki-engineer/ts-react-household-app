@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close"; // 閉じるボタン用のアイコン
 import FastfoodIcon from "@mui/icons-material/Fastfood"; //食事アイコン
-import { Controller, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { ExpenseCategory, IncomeCategory } from "../types";
 import AlarmIcon from "@mui/icons-material/Alarm";
 import AddHomeIcon from "@mui/icons-material/AddHome";
@@ -22,11 +22,13 @@ import TrainIcon from "@mui/icons-material/Train";
 import WorkIcon from "@mui/icons-material/Work";
 import SavingsIcon from "@mui/icons-material/Savings";
 import AddBusinessIcon from "@mui/icons-material/AddBusiness";
-
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Schema, transactionSchema } from "../validations/schema";
 interface TransactionFormProps {
   onCloseForm: () => void;
   isEntryDrawerOpen: boolean;
   currentDay: string;
+  onSaveTransaction: (transaction: Schema) => Promise<void>;
 }
 
 type IncomeExpense = "income" | "expense";
@@ -40,6 +42,7 @@ const TransactionForm = ({
   onCloseForm,
   isEntryDrawerOpen,
   currentDay,
+  onSaveTransaction,
 }: TransactionFormProps) => {
   const formWidth = 320;
 
@@ -62,7 +65,13 @@ const TransactionForm = ({
 
   const [categories, setCategories] = useState(expenseCategories);
 
-  const { control, setValue, watch } = useForm({
+  const {
+    control,
+    setValue,
+    watch,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<Schema>({
     defaultValues: {
       type: "expense",
       date: currentDay,
@@ -70,7 +79,9 @@ const TransactionForm = ({
       category: "",
       content: "",
     },
+    resolver: zodResolver(transactionSchema),
   });
+  // console.log(errors);
 
   const incomeExpenseToggle = (type: IncomeExpense) => {
     setValue("type", type);
@@ -78,17 +89,21 @@ const TransactionForm = ({
 
   // 収支タイプを監視
   const currentType = watch("type");
-  console.log(currentType);
 
   useEffect(() => {
-    const newCategories = currentType === "expense" ? expenseCategories : incomeCategories;
-    console.log(newCategories)
-    setCategories(newCategories)
-  }, [currentType])
+    const newCategories =
+      currentType === "expense" ? expenseCategories : incomeCategories;
+    setCategories(newCategories);
+  }, [currentType]);
 
   useEffect(() => {
     setValue("date", currentDay);
   }, [currentDay]);
+
+  // 送信処理
+  const onSubmit: SubmitHandler<Schema> = (data) => {
+    onSaveTransaction(data);
+  };
 
   return (
     <Box
@@ -124,14 +139,13 @@ const TransactionForm = ({
         </IconButton>
       </Box>
       {/* フォーム要素 */}
-      <Box component={"form"}>
+      <Box component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={2}>
           {/* 収支切り替えボタン */}
           <Controller
             name="type"
             control={control}
             render={({ field }) => {
-              console.log(field);
               return (
                 <ButtonGroup fullWidth>
                   <Button
@@ -167,6 +181,8 @@ const TransactionForm = ({
                 InputLabelProps={{
                   shrink: true,
                 }}
+                error={!!errors.date}
+                helperText={errors.date?.message}
               />
             )}
           />
@@ -175,12 +191,17 @@ const TransactionForm = ({
             name="category"
             control={control}
             render={({ field }) => (
-              <TextField {...field} id="カテゴリ" label="カテゴリ" select>
-                {categories.map((category) => (
-                  <MenuItem value={category.label}>
-                    <ListItemIcon>
-                      {category.icon}
-                    </ListItemIcon>
+              <TextField
+                error={!!errors.category}
+                helperText={errors.category?.message}
+                {...field}
+                id="カテゴリ"
+                label="カテゴリ"
+                select
+              >
+                {categories.map((category, index) => (
+                  <MenuItem value={category.label} key={index}>
+                    <ListItemIcon>{category.icon}</ListItemIcon>
                     {category.label}
                   </MenuItem>
                 ))}
@@ -192,27 +213,34 @@ const TransactionForm = ({
             name="amount"
             control={control}
             render={({ field }) => {
-              console.log(field)
               return (
                 <TextField
+                  error={!!errors.amount}
+                  helperText={errors.amount?.message}
                   {...field}
                   value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
-                    const newValue = parseInt(e.target.value, 10) || 0
-                    field.onChange(newValue)
+                    const newValue = parseInt(e.target.value, 10) || 0;
+                    field.onChange(newValue);
                   }}
                   label="金額"
-                  type="number" />
-              )
-            }
-              }
+                  type="number"
+                />
+              );
+            }}
           />
           {/* 内容 */}
           <Controller
             name="content"
             control={control}
             render={({ field }) => (
-              <TextField {...field} label="内容" type="text" />
+              <TextField
+                error={!!errors.content}
+                helperText={errors.content?.message}
+                {...field}
+                label="内容"
+                type="text"
+              />
             )}
           />
           {/* 保存ボタン */}
