@@ -12,22 +12,20 @@ interface HomeProps {
   monthlyTransactions: Transaction[];
   setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
   onSaveTransaction: (transaction: Schema) => Promise<void>;
-  setSlectedTransaction: React.Dispatch<
-    React.SetStateAction<Transaction | null>
-  >;
-  selectedTransaction: Transaction | null;
+  onDeleteTransaction: (transactionId: string) => Promise<void>;
 }
 
 const Home = ({
   monthlyTransactions,
   setCurrentMonth,
   onSaveTransaction,
-  selectedTransaction,
-  setSlectedTransaction,
+  onDeleteTransaction,
 }: HomeProps) => {
   const today = format(new Date(), "yyyy-MM-dd");
   const [currentDay, setCurrentDay] = useState(today);
   const [isEntryDrawerOpen, setIsEntryDrawerOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
 
   // 1日分のデータを取得
   const dailyTransactions = monthlyTransactions.filter((transaction) => {
@@ -36,13 +34,13 @@ const Home = ({
 
   const closeForm = () => {
     setIsEntryDrawerOpen(!isEntryDrawerOpen);
-    setSlectedTransaction(null);
+    setSelectedTransaction(null);
   };
 
   // フォームの開閉処理
   const handleAddTransactionForm = () => {
     if (selectedTransaction) {
-      setSlectedTransaction(null);
+      setSelectedTransaction(null);
     } else {
       setIsEntryDrawerOpen(!isEntryDrawerOpen);
     }
@@ -52,7 +50,7 @@ const Home = ({
   const handleSelectTransaction = (transaction: Transaction) => {
     console.log(transaction);
     setIsEntryDrawerOpen(true);
-    setSlectedTransaction(transaction)
+    setSelectedTransaction(transaction);
   };
 
   return (
@@ -83,6 +81,8 @@ const Home = ({
           currentDay={currentDay}
           onSaveTransaction={onSaveTransaction}
           selectedTransaction={selectedTransaction}
+          onDeleteTransaction={onDeleteTransaction}
+          setSelectedTransaction={setSelectedTransaction}
         />
       </Box>
     </Box>
