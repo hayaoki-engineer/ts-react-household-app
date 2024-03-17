@@ -9,7 +9,7 @@ import {theme} from './theme/theme'
 import { ThemeProvider } from '@emotion/react';
 import { CssBaseline } from '@mui/material';
 import { Transaction } from './types';
-import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { db } from './firebase';
 import { format } from 'date-fns';
 import { formatMonth } from './utils/formatting';
@@ -106,6 +106,28 @@ function App() {
     }
   }
 
+  // 取引を更新する処理
+  const handleUpdateTransaction = async (transaction: Schema, transactionId: string) => {
+    try {
+      // firestore更新処理
+      const docRef = doc(db, "Transactions", transactionId);
+
+      
+      await updateDoc(docRef, transaction);
+      // フロント更新
+      const updatedTransactions = transactions.map((t) =>
+        t.id === transactionId ? { ...t, ...transaction } : t
+      ) as Transaction[];
+      setTransactions(updatedTransactions);
+    } catch (err) {
+      if (isFireStoreError(err)) {
+        console.error("firestoreのエラーは：", err);
+      } else {
+        console.error("一般的なエラーは：", err);
+      }
+    }
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -120,6 +142,7 @@ function App() {
                   setCurrentMonth={setCurrentMonth}
                   onSaveTransaction={handleSaveTransaction}
                   onDeleteTransaction={handleDeleteTransaction}
+                  onUpdateTransaction={handleUpdateTransaction}
                 />
               }
             />
